@@ -3,11 +3,19 @@
 
 module Task1 where
 
+-- Hide built-in bind definition
+import Prelude hiding ((>>=))
+
 import Data.Functor.Identity
 
+-- * Join monad
+
+-- | Monad based on 'join' operation
+-- instead of usual bind operator '(>>=)'.
 class Applicative m => JoinMonad m where
-  {-# MINIMAL join #-}
   join :: m (m a) -> m a
+
+-- * Equivalent views
 
 infixl 1 >>=
 (>>=) :: JoinMonad m => m a -> (a -> m b) -> m b
@@ -16,6 +24,8 @@ infixl 1 >>=
 infixr 1 >=>
 (>=>) :: JoinMonad m => (a -> m b) -> (b -> m c) -> (a -> m c)
 (>=>) = error "TODO: define (>=>) in Task1"
+
+-- * Instances
 
 instance JoinMonad Identity where
   join :: Identity (Identity a) -> Identity a

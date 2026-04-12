@@ -5,6 +5,9 @@ module Task3 where
 
 import Data.Functor.Identity
 
+-- * Functor composition
+
+-- | Represents composition of two functors.
 newtype Compose f g a = Compose { getCompose :: f (g a) }
   deriving (Show, Eq)
 
@@ -19,18 +22,19 @@ instance (Applicative f, Applicative g) => Applicative (Compose f g) where
   (<*>) :: Compose f g (a -> b) -> Compose f g a -> Compose f g b
   (<*>) = error "TODO: define (<*>) (Applicative (Compose f g))"
 
+-- * Monad composition
+
 instance (Monad m, Monad n, Distrib n m) => Monad (Compose m n) where
   (>>=) :: forall a b. Compose m n a -> (a -> Compose m n b) -> Compose m n b
   (>>=) = error "TODO: define (>>=) (Monad (Compose m n))"
 
--- For composition of two monads m and n we need them to be distributable using:
---   distrib :: m (n a) -> n (m a)
+-- * Distributive property
 
--- IO (Maybe Int) -- is IO computation that might fail
--- Maybe (IO Int) -- is potentially IO computation
-
+-- | Describes distributive property of two monads.
 class (Monad m, Monad n) => Distrib m n where
   distrib :: m (n a) -> n (m a)
+
+-- * Distributive instances
 
 instance Monad n => Distrib Identity n where
   distrib :: Monad n => Identity (n a) -> n (Identity a)

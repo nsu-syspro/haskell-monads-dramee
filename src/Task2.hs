@@ -3,12 +3,20 @@
 
 module Task2 where
 
+-- Hide built-in bind definition
+import Prelude hiding ((>>=))
+
 import Data.Functor.Identity
 
+-- * Kleisli composition monad
+
+-- | Monad based on Kleisli composition '(>=>)' operator
+-- instead of usual bind operator '(>>=)'.
 class Applicative m => KleisliMonad m where
-  {-# MINIMAL (>=>) #-}
   infixr 1 >=>
   (>=>) :: (a -> m b) -> (b -> m c) -> (a -> m c)
+
+-- * Equivalent views
 
 infixl 1 >>=
 (>>=) :: KleisliMonad m => m a -> (a -> m b) -> m b
@@ -16,6 +24,8 @@ infixl 1 >>=
 
 join :: KleisliMonad m => m (m a) -> m a
 join = error "TODO: define join in Task2"
+
+-- * Instances
 
 instance KleisliMonad Identity where
   (>=>) :: (a -> Identity b) -> (b -> Identity c) -> (a -> Identity c)
