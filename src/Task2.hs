@@ -18,16 +18,21 @@ join :: KleisliMonad m => m (m a) -> m a
 join = error "TODO: define join in Task2"
 
 instance KleisliMonad Identity where
+  (>=>) :: (a -> Identity b) -> (b -> Identity c) -> (a -> Identity c)
   (>=>) = error "TODO: define (>=>) (KleisliMonad Identity)"
 
 instance KleisliMonad Maybe where
+  (>=>) :: (a -> Maybe b) -> (b -> Maybe c) -> (a -> Maybe c)
   (>=>) = error "TODO: define (>=>) (KleisliMonad Maybe)"
 
 instance KleisliMonad [] where
+  (>=>) :: (a -> [b]) -> (b -> [c]) -> (a -> [c])
   (>=>) = error "TODO: define (>=>) (KleisliMonad [])"
 
 instance (Monoid e) => KleisliMonad ((,) e) where
+  (>=>) :: Monoid e => (a -> (e, b)) -> (b -> (e, c)) -> (a -> (e, c))
   (>=>) = error "TODO: define (>=>) (KleisliMonad ((,) e))"
 
 instance KleisliMonad ((->) e) where
+  (>=>) :: (a -> e -> b) -> (b -> e -> c) -> (a -> e -> c)
   (>=>) = error "TODO: define (>=>) (KleisliMonad ((->) e))"

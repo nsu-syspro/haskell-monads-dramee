@@ -33,6 +33,7 @@ class (Monad m, Monad n) => Distrib m n where
   distrib :: m (n a) -> n (m a)
 
 instance Monad n => Distrib Identity n where
+  distrib :: Monad n => Identity (n a) -> n (Identity a)
   distrib = error "TODO: define distrib (Distrib Identity n)"
 
 instance Monad n => Distrib Maybe n where

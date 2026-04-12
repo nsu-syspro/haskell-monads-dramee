@@ -18,16 +18,21 @@ infixr 1 >=>
 (>=>) = error "TODO: define (>=>) in Task1"
 
 instance JoinMonad Identity where
+  join :: Identity (Identity a) -> Identity a
   join = error "TODO: define join (JoinMonad Identity)"
 
 instance JoinMonad Maybe where
+  join :: Maybe (Maybe a) -> Maybe a
   join = error "TODO: define join (JoinMonad Maybe)"
 
 instance JoinMonad [] where
+  join :: [[a]] -> [a]
   join = error "TODO: define join (JoinMonad [])"
 
 instance (Monoid e) => JoinMonad ((,) e) where
+  join :: Monoid e => (e, (e, a)) -> (e, a)
   join = error "TODO: define join (JoinMonad ((,) e))"
 
 instance JoinMonad ((->) e) where
+  join :: (e -> (e -> a)) -> (e -> a)
   join = error "TODO: define join (JoinMonad ((->) e))"
