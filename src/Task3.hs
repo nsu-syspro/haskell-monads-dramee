@@ -4,6 +4,7 @@
 module Task3 where
 
 import Data.Functor.Identity
+import Control.Monad (join)
 
 -- * Functor composition
 
@@ -13,20 +14,20 @@ newtype Compose f g a = Compose { getCompose :: f (g a) }
 
 instance (Functor f, Functor g) => Functor (Compose f g) where
   fmap :: (a -> b) -> Compose f g a -> Compose f g b
-  fmap = error "TODO: define fmap (Functor (Compose f g))"
+  fmap f (Compose fga) = Compose (fmap (fmap f) fga)
 
 instance (Applicative f, Applicative g) => Applicative (Compose f g) where
   pure :: a -> Compose f g a
-  pure = error "TODO: define pure (Applicative (Compose f g))"
+  pure = Compose . pure . pure
 
   (<*>) :: Compose f g (a -> b) -> Compose f g a -> Compose f g b
-  (<*>) = error "TODO: define (<*>) (Applicative (Compose f g))"
+  (<*>) (Compose f) (Compose x) = Compose (fmap (<*>) f <*> x)
 
 -- * Monad composition
 
 instance (Monad m, Monad n, Distrib n m) => Monad (Compose m n) where
   (>>=) :: forall a b. Compose m n a -> (a -> Compose m n b) -> Compose m n b
-  (>>=) = error "TODO: define (>>=) (Monad (Compose m n))"
+  (>>=) (Compose mna) f =Compose $ mna >>= fmap join . distrib . fmap (getCompose . f)
 
 -- * Distributive property
 
@@ -38,20 +39,22 @@ class (Monad m, Monad n) => Distrib m n where
 
 instance Monad n => Distrib Identity n where
   distrib :: Monad n => Identity (n a) -> n (Identity a)
-  distrib = error "TODO: define distrib (Distrib Identity n)"
+  distrib = fmap Identity . runIdentity
 
 instance Monad n => Distrib Maybe n where
   distrib :: Maybe (n a) -> n (Maybe a)
-  distrib = error "TODO: define distrib (Distrib Maybe n)"
+  distrib m = case m of
+    Nothing -> pure Nothing
+    Just n -> Just <$> n
 
 instance Monad n => Distrib [] n where
   distrib :: [] (n a) -> n ([] a)
-  distrib = error "TODO: define distrib (Distrib [] n)"
+  distrib = sequenceA
 
 instance (Monad n, Monoid e) => Distrib ((,) e) n where
   distrib :: (e, n a) -> n (e, a)
-  distrib = error "TODO: define distrib (Distrib ((,) e) n)"
+  distrib (e, n) = (,) e <$> n
 
 instance Monad n => Distrib n ((->) e) where
   distrib :: n (e -> a) -> (e -> n a)
-  distrib = error "TODO: define distrib (Distrib n ((->) e))"
+  distrib n e = n >>= \f -> return (f e)
